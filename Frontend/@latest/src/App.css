@@ -1,0 +1,195 @@
+/* Global styles for dark background */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f111a; /* Dark background */
+  color: #fff;
+  font-family: "Arial", sans-serif;
+}
+
+.homePageWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f, #1c1e29);
+}
+
+/* Form wrapper with dark theme */
+.formWrapper {
+  background: #1c1e29;
+  padding: 25px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* Footer styles */
+footer {
+  position: fixed;
+  bottom: 0;
+  color: #999;
+}
+
+/* Links in the footer */
+footer a {
+  color: #4aed88;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #368654;
+}
+
+/* Input group styles */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main label above inputs */
+.mainLabel {
+  margin-bottom: 20px;
+  margin-top: 0;
+  font-size: 18px;
+}
+
+/* Logo styles */
+.homePageLogo {
+  height: 80px;
+  margin-bottom: 30px;
+}
+
+/* Input box styles */
+.inputBox {
+  padding: 12px;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  margin-bottom: 14px;
+  background: #272935;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+}
+
+.inputBox::placeholder {
+  color: #b0b3bb;
+}
+
+/* Button styles */
+.btn {
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Join and leave button styles */
+.joinBtn,
+.leaveBtn {
+  background: #4aed88;
+  width: 100px;
+  margin-left: auto;
+  color: #0f0f0f;
+}
+
+.joinBtn:hover,
+.leaveBtn:hover {
+  background: #368654;
+}
+
+/* Create info link styles */
+.createInfo {
+  margin: 0 auto;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.createNewBtn {
+  color: #4aed88;
+  text-decoration: none;
+  border-bottom: 1px solid #4aed88;
+  transition: all 0.3s ease-in-out;
+}
+
+.createNewBtn:hover {
+  color: #368654;
+  border-color: #368654;
+}
+
+/* Sidebar and client list styles */
+.mainWrap {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+}
+
+.aside {
+  background: #1c1e29;
+  padding: 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.asideInner {
+  flex: 1;
+}
+
+.clientsList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.client {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.userName {
+  margin-top: 10px;
+}
+
+.logo {
+  border-bottom: 1px solid #424242;
+  padding-bottom: 10px;
+}
+
+.logoImage {
+  height: 60px;
+}
+
+.leaveBtn {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* CodeMirror editor styles */
+.CodeMirror {
+  min-height: calc(100vh - 20px);
+  font-size: 20px;
+  line-height: 1.6;
+  padding-top: 20px;
+  background: #1e1e1e;
+  color: #fff;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4a4a4a;
+  border-radius: 10px;
+}
