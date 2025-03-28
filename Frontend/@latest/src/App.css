@@ -1,4 +1,6 @@
-/* Global styles for dark background */
+/* ============================= */
+/* Global Styles for Dark Theme */
+/* ============================= */
 body {
   margin: 0;
   padding: 0;
@@ -7,62 +9,153 @@ body {
   font-family: "Arial", sans-serif;
 }
 
-.homePageWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
+/* ============================= */
+/* Main Wrapper Styles */
+/* ============================= */
+.mainWrap {
+  display: grid;
+  grid-template-columns: 260px 1fr; /* Wider sidebar for better spacing */
   height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f, #1c1e29);
 }
 
-/* Form wrapper with dark theme */
-.formWrapper {
+/* ============================= */
+/* Sidebar Styles */
+/* ============================= */
+.aside {
   background: #1c1e29;
-  padding: 25px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
-}
-
-/* Footer styles */
-footer {
-  position: fixed;
-  bottom: 0;
-  color: #999;
-}
-
-/* Links in the footer */
-footer a {
-  color: #4aed88;
-  text-decoration: none;
-}
-
-footer a:hover {
-  color: #368654;
-}
-
-/* Input group styles */
-.inputGroup {
+  padding: 16px;
+  color: #fff;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Main label above inputs */
-.mainLabel {
-  margin-bottom: 20px;
-  margin-top: 0;
+/* Inner sidebar section for clients */
+.asideInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ============================= */
+/* Logo Styles */
+/* ============================= */
+.logo {
+  border-bottom: 1px solid #424242;
+  padding-bottom: 10px;
+}
+
+.logo img {
+  height: 60px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ============================= */
+/* Client List Styles */
+/* ============================= */
+.clientsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  padding: 10px 0;
+}
+
+/* Individual client styles */
+.client {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  background: #272935;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  width: 70px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.client:hover {
+  transform: scale(1.1);
+}
+
+.userName {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #b0b3bb;
+}
+
+/* ============================= */
+/* Button Styles */
+/* ============================= */
+.btn {
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Copy and Leave button styles */
+.copyBtn,
+.leaveBtn {
+  width: 100%;
+  margin-top: 12px;
+  background: #4aed88;
+  color: #0f0f0f;
+}
+
+.copyBtn:hover,
+.leaveBtn:hover {
+  background: #368654;
+}
+
+/* ============================= */
+/* Editor Wrapper Styles */
+/* ============================= */
+.editorWrap {
+  background: #1e1e1e;
+  padding: 20px;
+}
+
+/* CodeMirror editor styles */
+.CodeMirror {
+  min-height: calc(100vh - 40px);
   font-size: 18px;
+  line-height: 1.6;
+  padding: 10px;
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 8px;
 }
 
-/* Logo styles */
-.homePageLogo {
-  height: 80px;
-  margin-bottom: 30px;
+/* ============================= */
+/* Scrollbar Styling */
+/* ============================= */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Input box styles */
+::-webkit-scrollbar-thumb {
+  background-color: #4a4a4a;
+  border-radius: 10px;
+}
+
+/* ============================= */
+/* Leave Button Full Width */
+/* ============================= */
+.leaveBtn {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* ============================= */
+/* Input Box and Button Styles */
+/* ============================= */
 .inputBox {
   padding: 12px;
   border-radius: 5px;
@@ -80,18 +173,9 @@ footer a:hover {
   color: #b0b3bb;
 }
 
-/* Button styles */
-.btn {
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-
-/* Join and leave button styles */
+/* ============================= */
+/* Join and Leave Button Styles */
+/* ============================= */
 .joinBtn,
 .leaveBtn {
   background: #4aed88;
@@ -105,10 +189,84 @@ footer a:hover {
   background: #368654;
 }
 
-/* Create info link styles */
-.createInfo {
+/* ============================= */
+/* Footer Styles */
+/* ============================= */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: #999;
+  padding: 8px 0;
+  background: #1c1e29;
+}
+
+/* Footer links */
+footer a {
+  color: #4aed88;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #368654;
+}
+
+/* ============================= */
+/* Create New Button Styles */
+/* ============================= */
+.createNewBtn {
+  color: #4aed88;
+  text-decoration: none;
+  border-bottom: 1px solid #4aed88;
+  transition: all 0.3s ease-in-out;
+}
+
+.createNewBtn:hover {
+  color: #368654;
+  border-color: #368654;
+}
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
   margin: 0 auto;
-  margin-top: 20px;
+}
+
+.inputBox {
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  outline: none;
+  border: 1px solid #424242;
+  background: #272935;
+  color: #fff;
+  font-size: 14px;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn.joinBtn {
+  width: 100%;
+  max-width: 150px;
+  padding: 12px;
+  font-size: 14px;
+  text-align: center;
+  background: #4aed88;
+  color: #0f0f0f;
+  border-radius: 8px;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn.joinBtn:hover {
+  background: #368654;
+}
+
+.createInfo {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #b0b3bb;
   text-align: center;
 }
 
@@ -124,72 +282,8 @@ footer a:hover {
   border-color: #368654;
 }
 
-/* Sidebar and client list styles */
-.mainWrap {
-  display: grid;
-  grid-template-columns: 230px 1fr;
-}
-
-.aside {
-  background: #1c1e29;
-  padding: 16px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-}
-
-.asideInner {
-  flex: 1;
-}
-
-.clientsList {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.client {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  font-weight: bold;
-}
-
-.userName {
-  margin-top: 10px;
-}
-
-.logo {
-  border-bottom: 1px solid #424242;
-  padding-bottom: 10px;
-}
-
-.logoImage {
-  height: 60px;
-}
-
-.leaveBtn {
-  width: 100%;
+footer h4 {
+  font-size: 14px;
   margin-top: 20px;
-}
-
-/* CodeMirror editor styles */
-.CodeMirror {
-  min-height: calc(100vh - 20px);
-  font-size: 20px;
-  line-height: 1.6;
-  padding-top: 20px;
-  background: #1e1e1e;
-  color: #fff;
-}
-
-/* Scrollbar styling for dark theme */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #4a4a4a;
-  border-radius: 10px;
+  color: #b0b3bb;
 }
