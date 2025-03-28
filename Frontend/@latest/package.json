@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/runtime": "^7.27.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.0.17",
     "axios": "^1.8.4",
+    "codemirror": "^5.65.16",
+    "core-js-pure": "^3.41.0",
     "react": "^18.3.1",
+    "react-avatar": "^5.0.3",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
     "react-redux": "^9.2.0",
