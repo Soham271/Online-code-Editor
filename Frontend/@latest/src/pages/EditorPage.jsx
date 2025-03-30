@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import ACTIONS from "../Actions.js";
-import Client from "../component/Client.jsx";
-import Editor from "../component/Editor.jsx";
-import { initSocket } from "../Socket.js";
+import ACTIONS from "../Actions";
+import Client from "../component/Client";
+import Editor from "../component/Editor";
+import { initSocket } from "../Socket";
 import logo from "../assets/code-sync.png";
 import {
   useLocation,
@@ -14,64 +14,60 @@ import {
 
 const EditorPage = () => {
   const socketRef = useRef(null);
-  const codeRef = useRef(""); // ✅ Holds the latest code
   const location = useLocation();
   const { roomId } = useParams();
   const reactNavigator = useNavigate();
   const [clients, setClients] = useState([]);
+  const [language, setLanguage] = useState("javascript");
+  const [codes, setCodes] = useState({}); // { language: code }
+  const [activeLanguages, setActiveLanguages] = useState(["javascript"]);
 
   useEffect(() => {
     const init = async () => {
-      if (socketRef.current) return; // ✅ Prevent duplicate socket connections
       socketRef.current = await initSocket();
 
-      socketRef.current.on("connect_error", (err) => handleErrors(err));
-      socketRef.current.on("connect_failed", (err) => handleErrors(err));
-
-      function handleErrors(e) {
-        console.log("❌ Socket error:", e);
-        toast.error("Socket connection failed, try again later.");
+      socketRef.current.on("connect_error", (err) => {
+        console.error("Socket error:", err);
+        toast.error("Socket connection failed");
         reactNavigator("/");
-      }
+      });
+
+      socketRef.current.on("connect_failed", (err) => {
+        console.error("Socket connection failed:", err);
+        toast.error("Socket connection failed");
+        reactNavigator("/");
+      });
 
       if (!location.state?.username) {
-        toast.error("Username not found! Redirecting...");
         reactNavigator("/");
         return;
       }
 
-      const username = location.state.username;
+      socketRef.current.emit(ACTIONS.JOIN, {
+        roomId,
+        username: location.state.username,
+        language,
+      });
 
-      console.log(`🚀 Joining room: ${roomId} as "${username}"`);
-
-      // ✅ Emit JOIN only once
-      socketRef.current.emit(ACTIONS.JOIN, { roomId, username });
-
-      // ✅ Handle JOINED event
       socketRef.current.on(
         ACTIONS.JOINED,
         ({ clients, username, socketId }) => {
-          console.log(`👤 ${username} joined with socket ID: ${socketId}`);
           if (username !== location.state.username) {
-            toast.success(`${username} joined the room.`);
+            toast.success(`${username} joined the room`);
           }
           setClients(clients);
 
-          // ✅ Send latest code to newly joined client
           if (socketId !== socketRef.current.id) {
-            console.log("📝 Sending latest code to new client...");
             socketRef.current.emit(ACTIONS.SYNC_CODE, {
-              code: codeRef.current,
               socketId,
+              language,
             });
           }
         }
       );
 
-      // ✅ Handle disconnection
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
-        console.log(`❌ ${username} disconnected`);
-        toast.success(`${username} left the room.`);
+        toast.success(`${username} left the room`);
         setClients((prev) =>
           prev.filter((client) => client.socketId !== socketId)
         );
@@ -80,35 +76,38 @@ const EditorPage = () => {
 
     init();
 
-    // ✅ Clean up on unmount
     return () => {
       if (socketRef.current) {
-        console.log("🔴 Disconnecting socket...");
         socketRef.current.disconnect();
         socketRef.current.off(ACTIONS.JOINED);
         socketRef.current.off(ACTIONS.DISCONNECTED);
-        socketRef.current = null;
       }
     };
   }, []);
 
-  async function copyRoomId() {
-    console.log("copy room id", roomId);
-    if (!roomId) {
-      toast.error("Room ID is undefined.");
-      return;
+  const handleCodeChange = (language) => (code) => {
+    setCodes((prev) => ({ ...prev, [language]: code }));
+  };
+
+  const handleLanguageChange = (newLanguage) => {
+    if (!activeLanguages.includes(newLanguage)) {
+      setActiveLanguages((prev) => [...prev, newLanguage]);
     }
+    setLanguage(newLanguage);
+  };
+
+  const copyRoomId = async () => {
     try {
       await navigator.clipboard.writeText(roomId);
-      toast.success("Room ID copied!");
+      toast.success("Room ID copied to clipboard");
     } catch (err) {
-      toast.error("Could not copy Room ID.");
+      toast.error("Could not copy Room ID");
     }
-  }
+  };
 
-  function leaveRoom() {
+  const leaveRoom = () => {
     reactNavigator("/");
-  }
+  };
 
   if (!location.state) return <Navigate to="/" />;
 
@@ -119,6 +118,25 @@ const EditorPage = () => {
           <div className="logo">
             <img className="logoImage" src={logo} alt="logo" />
           </div>
+
+          <div className="languageSelector">
+            <label>Language: </label>
+            <select
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="languageDropdown"
+            >
+              <option value="javascript">JavaScript</option>
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
+              <option value="python">Python</option>
+              <option value="xml">XML</option>
+              <option value="c">C</option>
+              <option value="C++">C++</option>
+              <option value="java">Java</option>
+            </select>
+          </div>
+
           <h3>Connected</h3>
           <div className="clientsList">
             {clients.map((client) => (
@@ -134,13 +152,20 @@ const EditorPage = () => {
         </button>
       </div>
       <div className="editorWrap">
-        <Editor
-          socketRef={socketRef}
-          roomId={roomId}
-          onCodeChange={(code) => {
-            codeRef.current = code; // ✅ Keep track of the latest code
-          }}
-        />
+        {activeLanguages.map((lang) => (
+          <div
+            key={lang}
+            style={{ display: lang === language ? "block" : "none" }}
+          >
+            <Editor
+              socketRef={socketRef}
+              roomId={roomId}
+              language={lang}
+              onCodeChange={handleCodeChange(lang)}
+              initialCode={codes[lang] || ""}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
