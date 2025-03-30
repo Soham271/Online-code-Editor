@@ -6,6 +6,7 @@ const ACTIONS = {
   SYNC_CODE: "sync_code",
   LEAVE: "leave",
   LEAVE_ROOM: "leave_room",
+  LANGUAGE_CHANGE: "language-change",
 };
 
 export default ACTIONS;
