@@ -3,11 +3,13 @@ import { v4 as uuidV4 } from "uuid";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/code-sync.png";
+
 const Home = () => {
   const navigate = useNavigate();
 
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
+
   const createNewRoom = (e) => {
     e.preventDefault();
     const id = uuidV4();
@@ -21,9 +23,8 @@ const Home = () => {
       return;
     }
 
-    // Redirect
+    // Redirect to Editor Page
     navigate(`/editor/${roomId}`, {
-      // state is used to pass data to the next route
       state: {
         username,
       },
@@ -35,11 +36,16 @@ const Home = () => {
       joinRoom();
     }
   };
+
   return (
     <div className="homePageWrapper">
+      {/* Background Animation */}
+      <div className="animatedBackground"></div>
+
       <div className="formWrapper">
         <img className="homePageLogo" src={logo} alt="code-sync-logo" />
         <h4 className="mainLabel">Paste invitation ROOM ID</h4>
+
         <div className="inputGroup">
           <input
             type="text"
@@ -49,6 +55,7 @@ const Home = () => {
             value={roomId}
             onKeyUp={handleInputEnter}
           />
+
           <input
             type="text"
             className="inputBox"
@@ -57,21 +64,31 @@ const Home = () => {
             value={username}
             onKeyUp={handleInputEnter}
           />
+
           <button className="btn joinBtn" onClick={joinRoom}>
             Join
           </button>
-          <span className="createInfo">
+
+          <div className="createInfo">
             If you don't have an invite then create &nbsp;
-            <a onClick={createNewRoom} href="" className="createNewBtn">
+            <a onClick={createNewRoom} href="#" className="createNewBtn">
               new room
             </a>
-          </span>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
       <footer>
         <h4>
           Built with 💛 &nbsp; by &nbsp;
-          <a href="https://github.com/Soham271">Soham N Patil</a>
+          <a
+            href="https://github.com/Soham271"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Soham N Patil
+          </a>
         </h4>
       </footer>
     </div>
