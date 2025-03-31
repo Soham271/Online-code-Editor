@@ -17,6 +17,8 @@ import ACTIONS from "../Actions.js";
 const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
   const editorRef = useRef(null);
   const isCodeChangedFromSocket = useRef(false);
+  const lastCursor = useRef(null);
+
 
   const languageModes = {
     javascript: { name: "javascript", json: true },
@@ -29,8 +31,15 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
     java: "text/x-java",
   };
 
+
   useEffect(() => {
     const init = () => {
+      if (!document.getElementById(`realtimeEditor-${language}`)) return;
+
+      if (editorRef.current) {
+        editorRef.current.toTextArea(); 
+      }
+
       editorRef.current = Codemirror.fromTextArea(
         document.getElementById(`realtimeEditor-${language}`),
         {
@@ -44,14 +53,20 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
         }
       );
 
+   
       if (initialCode) {
         editorRef.current.setValue(initialCode);
-        editorRef.current.markClean();
       }
 
+   
+      editorRef.current.on("beforeChange", (instance) => {
+        lastCursor.current = instance.getCursor();
+      });
+
+      
       editorRef.current.on(
         "change",
-        debounce((instance, changes) => {
+        debounce((instance) => {
           if (isCodeChangedFromSocket.current) {
             isCodeChangedFromSocket.current = false;
             return;
@@ -60,12 +75,14 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
           const code = instance.getValue();
           onCodeChange(code);
 
-          socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-            roomId,
-            code,
-            language,
-          });
-        }, 1000000)
+          if (socketRef.current) {
+            socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+              roomId,
+              code,
+              language,
+            });
+          }
+        }, 50) 
       );
     };
 
@@ -76,36 +93,44 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
         editorRef.current.toTextArea();
       }
     };
-  }, [language, initialCode]);
+  }, [language, initialCode, socketRef, roomId, onCodeChange]);
 
+  // Listen for socket changes to update the editor
   useEffect(() => {
-    if (socketRef.current) {
-      const handleCodeChange = ({ code, lang }) => {
-        if (lang !== language || !editorRef.current) return;
+    if (!socketRef.current || !editorRef.current) return;
 
-        const currentCode = editorRef.current.getValue();
-        if (code === currentCode) return;
+    const handleCodeChange = ({ code, lang }) => {
+      if (lang !== language || !editorRef.current) return;
 
-        isCodeChangedFromSocket.current = true;
+      const currentCode = editorRef.current.getValue();
+      if (code === currentCode) return;
 
-       
-        const cursor = editorRef.current.getCursor();
-        const selections = editorRef.current.listSelections();
+      isCodeChangedFromSocket.current = true;
 
-        editorRef.current.setValue(code);
+      
+      const cursor = editorRef.current.getCursor();
+      const selections = editorRef.current.listSelections();
+      const scrollInfo = editorRef.current.getScrollInfo();
 
-        
-        editorRef.current.setCursor(cursor);
-        editorRef.current.setSelections(selections);
-      };
+     
+      editorRef.current.setValue(code);
 
-      socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
+     
+      editorRef.current.setCursor(cursor);
+      editorRef.current.setSelections(selections);
+      editorRef.current.scrollTo(scrollInfo.left, scrollInfo.top);
+    };
 
-      return () => {
+    
+    socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
+
+ 
+    return () => {
+      if (socketRef.current) {
         socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
-      };
-    }
-  }, [socketRef.current, language]);
+      }
+    };
+  }, [language, roomId]);
 
   return <textarea id={`realtimeEditor-${language}`} />;
 };
