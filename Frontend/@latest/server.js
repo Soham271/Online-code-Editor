@@ -8,14 +8,14 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "*", // Allow all origins for development; restrict in production
     methods: ["GET", "POST"],
   },
 });
 
-const userSocketMap = {}; 
-const usernameSocketMap = {}; 
-const roomCodeMap = {};
+const userSocketMap = {}; // Maps socketId -> username
+const usernameSocketMap = {}; // Maps username -> socketId
+const roomCodeMap = {}; // Maps roomId -> { language: code }
 
 function getAllConnectedClients(roomId) {
   const clientsInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
@@ -31,11 +31,11 @@ io.on("connection", (socket) => {
   console.log("✅ Socket connected:", socket.id);
 
   socket.on(ACTIONS.JOIN, ({ roomId, username, language }) => {
-    console.log(`👤 "${username}" is trying to join room ${roomId}`);
+    console.log(`👤 "${username}" joined room ${roomId}`);
 
     const existingSocketId = usernameSocketMap[username];
     if (existingSocketId) {
-      console.log(`🔄 "${username}" is reconnecting with new socket ID`);
+      console.log(`🔄 "${username}" reconnected with new socket ID`);
       delete userSocketMap[existingSocketId];
       socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
         socketId: existingSocketId,
@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
     socket.join(roomId);
 
     if (!roomCodeMap[roomId]) {
-      roomCodeMap[roomId] = {}; // Initialize code map for the room
+      roomCodeMap[roomId] = {};
     }
 
     const clients = getAllConnectedClients(roomId);
@@ -63,12 +63,12 @@ io.on("connection", (socket) => {
 
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code, language }) => {
     if (!roomCodeMap[roomId]) roomCodeMap[roomId] = {};
-    roomCodeMap[roomId][language] = code; // Store code for this language
-    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code, language });
+    roomCodeMap[roomId][language] = code;
+    socket.to(roomId).emit(ACTIONS.CODE_CHANGE, { code, language });
   });
 
   socket.on(ACTIONS.SYNC_CODE, ({ socketId, language }) => {
-    const roomId = Array.from(socket.rooms).find((r) => r !== socket.id);
+    const roomId = Array.from(socket.rooms).find((r) => r !== socket.id) || "";
     const code = roomCodeMap[roomId]?.[language] || "";
     io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code, language });
   });
@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
     const rooms = [...socket.rooms];
     rooms.forEach((roomId) => {
       if (roomId !== socket.id) {
-        socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
+        socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
           socketId: socket.id,
           username: username,
         });
@@ -90,7 +90,6 @@ io.on("connection", (socket) => {
     });
 
     delete userSocketMap[socket.id];
-    socket.leave();
   });
 });
 
