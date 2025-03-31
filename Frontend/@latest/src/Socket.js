@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-
+// ✅ Initialize Socket Connection
 export const initSocket = async () => {
   const options = {
     "force new connection": true,
@@ -9,7 +9,7 @@ export const initSocket = async () => {
     transports: ["websocket"],
   };
 
-  
+  // ✅ Get Backend URL from .env
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   console.log("Connecting to:", backendURL);
 
@@ -20,7 +20,7 @@ export const initSocket = async () => {
     return null;
   }
 
-
+  // ✅ Create socket connection
   const socket = io(backendURL, options);
 
   socket.on("connect", () => {

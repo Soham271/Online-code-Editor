@@ -19,7 +19,7 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
   const isCodeChangedFromSocket = useRef(false);
   const lastCursor = useRef(null);
 
-
+  // Define supported language modes
   const languageModes = {
     javascript: { name: "javascript", json: true },
     html: "htmlmixed",
@@ -31,13 +31,13 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
     java: "text/x-java",
   };
 
-
+  // Initialize CodeMirror instance
   useEffect(() => {
     const init = () => {
       if (!document.getElementById(`realtimeEditor-${language}`)) return;
 
       if (editorRef.current) {
-        editorRef.current.toTextArea(); 
+        editorRef.current.toTextArea(); // Destroy previous instance before re-initializing
       }
 
       editorRef.current = Codemirror.fromTextArea(
@@ -53,17 +53,17 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
         }
       );
 
-   
+      // Load initial code if provided
       if (initialCode) {
         editorRef.current.setValue(initialCode);
       }
 
-   
+      // Store cursor before any changes
       editorRef.current.on("beforeChange", (instance) => {
         lastCursor.current = instance.getCursor();
       });
 
-      
+      // Handle local code changes and emit to the server
       editorRef.current.on(
         "change",
         debounce((instance) => {
@@ -82,12 +82,13 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
               language,
             });
           }
-        }, 50) 
+        }, 50) // Debounce to avoid spamming socket
       );
     };
 
     init();
 
+    // Cleanup to destroy Codemirror instance
     return () => {
       if (editorRef.current) {
         editorRef.current.toTextArea();
@@ -107,24 +108,24 @@ const Editor = ({ socketRef, roomId, language, onCodeChange, initialCode }) => {
 
       isCodeChangedFromSocket.current = true;
 
-      
+      // Preserve cursor, selection, and scroll
       const cursor = editorRef.current.getCursor();
       const selections = editorRef.current.listSelections();
       const scrollInfo = editorRef.current.getScrollInfo();
 
-     
+      // Set updated code
       editorRef.current.setValue(code);
 
-     
+      // Restore cursor, selection, and scroll
       editorRef.current.setCursor(cursor);
       editorRef.current.setSelections(selections);
       editorRef.current.scrollTo(scrollInfo.left, scrollInfo.top);
     };
 
-    
+    // Subscribe to socket changes
     socketRef.current.on(ACTIONS.CODE_CHANGE, handleCodeChange);
 
- 
+    // Cleanup socket listener
     return () => {
       if (socketRef.current) {
         socketRef.current.off(ACTIONS.CODE_CHANGE, handleCodeChange);
