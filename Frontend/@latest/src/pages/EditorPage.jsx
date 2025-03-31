@@ -27,13 +27,13 @@ const EditorPage = () => {
       socketRef.current = await initSocket();
 
       socketRef.current.on("connect_error", (err) => {
-        console.error("Socket error:", err);
+        console.error("Socket connect_error:", err);
         toast.error("Socket connection failed");
         reactNavigator("/");
       });
 
       socketRef.current.on("connect_failed", (err) => {
-        console.error("Socket connection failed:", err);
+        console.error("Socket connect_failed:", err);
         toast.error("Socket connection failed");
         reactNavigator("/");
       });
@@ -72,6 +72,10 @@ const EditorPage = () => {
           prev.filter((client) => client.socketId !== socketId)
         );
       });
+
+      socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code, language }) => {
+        setCodes((prev) => ({ ...prev, [language]: code }));
+      });
     };
 
     init();
@@ -81,9 +85,10 @@ const EditorPage = () => {
         socketRef.current.disconnect();
         socketRef.current.off(ACTIONS.JOINED);
         socketRef.current.off(ACTIONS.DISCONNECTED);
+        socketRef.current.off(ACTIONS.CODE_CHANGE);
       }
     };
-  }, []);
+  }, [roomId, location.state, reactNavigator]);
 
   const handleCodeChange = (language) => (code) => {
     setCodes((prev) => ({ ...prev, [language]: code }));
@@ -94,6 +99,13 @@ const EditorPage = () => {
       setActiveLanguages((prev) => [...prev, newLanguage]);
     }
     setLanguage(newLanguage);
+
+    if (socketRef.current) {
+      socketRef.current.emit(ACTIONS.SYNC_CODE, {
+        socketId: socketRef.current.id,
+        language: newLanguage,
+      });
+    }
   };
 
   const copyRoomId = async () => {
